@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <title>Кітап қосу — KK</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<header>
+  <div class="logo">📚 Кітапхана</div>
+  <div class="header-right">
+    <select id="langSelect" class="lang-select">
+      <option value="ru" {% if lang=='ru' %}selected{% endif %}>Русский</option>
+      <option value="kk" {% if lang=='kk' %}selected{% endif %}>Қазақша</option>
+      <option value="en" {% if lang=='en' %}selected{% endif %}>English</option>
+    </select>
+    <a href="{{ url_for('books_page', lang=lang) }}" class="back-link">⬅ Кітаптарға қайту</a>
+  </div>
+</header>
+
+<div class="form-container">
+  <h1>Кітап қосу</h1>
+  <form id="addForm" class="book-form">
+    <div class="form-row"><label>Атауы</label><input id="name" type="text" required></div>
+    <div class="form-row"><label>Автор</label><input id="author" type="text"></div>
+    <div class="form-row"><label>Жылы</label><input id="year" type="text"></div>
+    <div class="form-row"><label>Баспа</label><input id="izdat" type="text"></div>
+    <div class="form-row"><label>Сипаттама</label><textarea id="about"></textarea></div>
+    <div class="form-row"><label>Қақпақ</label><input id="image" type="file"></div>
+    <button class="submit-btn" type="submit">Кітап қосу</button>
+  </form>
+</div>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+<script>
+  // инициализация формы добавления
+  initAddForm();
+</script>
+</body>
+</html>
