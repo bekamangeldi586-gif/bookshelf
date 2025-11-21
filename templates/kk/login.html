@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>Вход — RU</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<header>
+  <div class="logo">📚 Библиотека</div>
+    <div class="header-right">
+    <select id="langSelect" class="lang-select">
+      <option value="ru" {% if lang=='ru' %}selected{% endif %}>Русский</option>
+      <option value="kk" {% if lang=='kk' %}selected{% endif %}>Қазақша</option>
+      <option value="en" {% if lang=='en' %}selected{% endif %}>English</option>
+    </select>
+
+    <form action="{{ url_for('books_page', lang=lang) }}" method="get" style="display:inline;">
+      <button type="submit" class="submit-btn" style="padding:6px 12px; font-size:14px;">
+        ⬅ К книгам
+      </button>
+    </form>
+  </div>
+</header>
+
+<div class="form-container">
+  <h1>Вход</h1>
+
+  <form method="post">
+    <div class="form-row">
+      <label for="login">Логин</label>
+      <input id="login" name="login" type="text" required>
+    </div>
+
+    <div class="form-row">
+      <label for="password">Пароль</label>
+      <input id="password" name="password" type="password" required>
+    </div>
+
+    <button class="submit-btn" type="submit">Войти</button>
+  </form>
+
+  {% if error %}
+    <p style="color:red">{{ error }}</p>
+  {% endif %}
+
+  <form action="{{ url_for('register', lang=lang) }}" method="get" style="margin-top:10px;">
+    <button type="submit" class="submit-btn" style="padding: 8px 12px; font-size: 14px;">
+      Регистрация
+    </button>
+  </form>
+</div>
+</body>
+</html>

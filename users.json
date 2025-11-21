@@ -1,0 +1,10 @@
+[
+    {
+        "login": "admin",
+        "password": "scrypt:32768:8:1$4B34L1wMNfTDRL7t$aafa36843a94b846d4ca286f59b71d7a23ceffadeb195e409ed7ddb9a377ced21494779ecc71d6dda9c1719cdeea5e96d352292acaf46f2f2929910a830508ed"
+    },
+    {
+        "login": "Moteeees",
+        "password": "scrypt:32768:8:1$Dqw6v23o7UgiWFVB$d924cc167b1bb84d7a72437afc5a968fd51650453a122e9ee3e70a31755a2871c06ffa03677716f464c07e9a96f1af6261490a79c97cf4edc0ce0fca74cdc4a4"
+    }
+]

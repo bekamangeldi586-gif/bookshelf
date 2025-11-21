@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>Регистрация — RU</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<header>
+  <div class="logo">📚 Библиотека</div>
+</header>
+
+<div class="form-container">
+  <h1>Регистрация</h1>
+
+  <form method="post">
+    <div class="form-row">
+      <label for="login">Логин</label>
+      <input id="login" name="login" type="text" required>
+    </div>
+
+    <div class="form-row">
+      <label for="password">Пароль</label>
+      <input id="password" name="password" type="password" required>
+    </div>
+
+    <button class="submit-btn" type="submit">Создать аккаунт</button>
+  </form>
+
+  {% if error %}
+    <p style="color:red">{{ error }}</p>
+  {% endif %}
+
+  <form action="{{ url_for('login', lang=lang) }}" method="get" style="margin-top:10px;">
+    <button type="submit" class="submit-btn" style="padding:8px 12px; font-size:14px;">
+      Войти
+    </button>
+  </form>
+</div>
+
+</body>
+</html>

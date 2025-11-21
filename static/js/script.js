@@ -5,6 +5,11 @@ function currentLang() {
     return parts[0] && LANGS.includes(parts[0]) ? parts[0] : "ru";
 }
 
+function currentPage() {
+    const parts = window.location.pathname.split("/").filter(Boolean);
+    return parts[1] || "books";
+}
+
 function escapeHtml(s) {
     return String(s||"").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" })[c]);
 }
@@ -72,26 +77,6 @@ function closeModal() {
     document.getElementById("modalBg").style.display = "none";
 }
 
-document.addEventListener("click", (e) => {
-    if (e.target && e.target.id === "modalBg") closeModal();
-});
-document.getElementById("closeBtn")?.addEventListener("click", closeModal);
-
-/* Language selector */
-document.addEventListener("DOMContentLoaded", () => {
-    const langSelect = document.getElementById("langSelect");
-    if (langSelect) {
-        langSelect.value = currentLang();
-        langSelect.addEventListener("change", () => {
-            const target = langSelect.value;
-            const parts = window.location.pathname.split("/").filter(Boolean);
-            const page = parts[1] || "books";
-            window.location.href = `/${target}/${page}`;
-        });
-    }
-});
-
-/* Add page */
 function initAddForm() {
     const form = document.getElementById("addForm");
     if (!form) return;
@@ -127,7 +112,22 @@ function initAddForm() {
     };
 }
 
-window.addEventListener("load", () => {
+document.addEventListener("DOMContentLoaded", () => {
+    const langSelect = document.getElementById("langSelect");
+    if (langSelect) {
+        langSelect.value = currentLang();
+        langSelect.addEventListener("change", () => {
+            const targetLang = langSelect.value;
+            const page = currentPage();
+            window.location.href = `/${targetLang}/${page}`;
+        });
+    }
     loadBooks();
     initAddForm();
 });
+
+document.addEventListener("click", (e) => {
+    if (e.target && e.target.id === "modalBg") closeModal();
+});
+
+document.getElementById("closeBtn")?.addEventListener("click", closeModal);

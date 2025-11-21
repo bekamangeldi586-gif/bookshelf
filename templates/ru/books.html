@@ -5,18 +5,38 @@
   <title>Библиотека — RU</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
+
 <body>
 <header>
   <div class="logo">📚 Библиотека</div>
+
   <div class="header-right">
     <select id="langSelect" class="lang-select">
       <option value="ru" {% if lang=='ru' %}selected{% endif %}>Русский</option>
       <option value="kk" {% if lang=='kk' %}selected{% endif %}>Қазақша</option>
       <option value="en" {% if lang=='en' %}selected{% endif %}>English</option>
     </select>
+
+    {% if current_user %}
       <form action="{{ url_for('add_page', lang=lang) }}" method="get" style="display:inline;">
-      <button type="submit" class="submit-btn" style="padding:6px 12px; font-size:14px;">Добавить</button>
+        <button type="submit" class="submit-btn" style="padding:6px 12px; font-size:14px;">
+          Добавить
+        </button>
       </form>
+
+      <form action="{{ url_for('logout') }}" method="post" style="display:inline;">
+        <button type="submit" class="submit-btn" style="padding:6px 12px; font-size:14px;">
+          Выход
+        </button>
+      </form>
+
+    {% else %}
+      <form action="{{ url_for('login', lang=lang) }}" method="get" style="display:inline;">
+        <button type="submit" class="submit-btn" style="padding:6px 12px; font-size:14px;">
+          Войти
+        </button>
+      </form>
+    {% endif %}
   </div>
 </header>
 
@@ -30,12 +50,17 @@
     <img id="modalImg" src="">
     <div class="content">
       <h2 id="modalName"></h2>
+
       <p><b>Автор:</b> <span id="modalAuthor"></span></p>
       <p><b>Год:</b> <span id="modalYear"></span></p>
       <p><b>Издательство:</b> <span id="modalIzdat"></span></p>
+
       <p><b>Описание:</b></p>
       <p id="modalAbout"></p>
-      <div class="remove-wrap"><button id="removeBtn">Удалить</button></div>
+
+      <div class="remove-wrap">
+        <button id="removeBtn" class="remove-btn">Удалить</button>
+      </div>
     </div>
   </div>
 </div>
