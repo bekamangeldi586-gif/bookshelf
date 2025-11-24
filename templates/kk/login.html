@@ -11,7 +11,7 @@
 <body>
 
 <header>
-  <div class="logo">📚 Кітапхана</div>
+  <div class="logo">{% if lang=='ru' %}📚 Библиотека{% elif lang=='kk' %}📚 Кiтапхана{% else %}📚 Library{% endif %}</div>
 
   <div class="header-right">
     <select id="langSelect" class="lang-select">
@@ -20,11 +20,9 @@
       <option value="en" {% if lang=='en' %}selected{% endif %}>English</option>
     </select>
 
-    <form action="{{ url_for('books_page', lang=lang) }}" method="get" style="display:inline;">
-      <button type="submit" class="submit-btn" style="padding:6px 12px; font-size:14px;">
-        ⬅ {% if lang=='ru' %}К книгам{% elif lang=='kk' %}Кітаптар{% else %}Books{% endif %}
-      </button>
-    </form>
+    <a class="small-btn" href="{{ url_for('books_page', lang=lang) }}">
+      ⬅ {% if lang=='ru' %}К книгам{% elif lang=='kk' %}Кітаптар{% else %}Books{% endif %}
+    </a>
   </div>
 </header>
 
@@ -35,34 +33,32 @@
 
   <form method="post">
     <div class="form-row">
-      <label for="login">
-        {% if lang=='ru' %}Логин{% elif lang=='kk' %}Логин{% else %}Login{% endif %}
-      </label>
-      <input id="login" name="login" type="text" required>
+      <label>{% if lang=='ru' %}Логин{% elif lang=='kk' %}Логин{% else %}Login{% endif %}</label>
+      <input name="login" type="text" required>
     </div>
 
     <div class="form-row">
-      <label for="password">
-        {% if lang=='ru' %}Пароль{% elif lang=='kk' %}Құпия сөз{% else %}Password{% endif %}
-      </label>
-      <input id="password" name="password" type="password" required>
+      <label>{% if lang=='ru' %}Пароль{% elif lang=='kk' %}Құпия сөз{% else %}Password{% endif %}</label>
+      <input name="password" type="password" required>
     </div>
 
-    <button class="submit-btn" type="submit">
+    <button class="submit-btn" type="submit" style="margin-top: 10px;">
       {% if lang=='ru' %}Войти{% elif lang=='kk' %}Кіру{% else %}Sign in{% endif %}
     </button>
   </form>
 
   {% if error %}
-  <p style="color:red">{{ error }}</p>
+  <p class="error">{{ error }}</p>
   {% endif %}
 
-  <form action="{{ url_for('register', lang=lang) }}" method="get" style="margin-top:10px;">
-    <button type="submit" class="submit-btn" style="padding: 8px 12px; font-size: 14px;">
-      {% if lang=='ru' %}Регистрация{% elif lang=='kk' %}Тіркелу{% else %}Register{% endif %}
-    </button>
-  </form>
+<form action="{{ url_for('register', lang=lang) }}" method="get">
+  <button type="submit" class="submit-btn" style="margin-top: 10px;">
+    {% if lang=='ru' %}Регистрация{% elif lang=='kk' %}Тіркелу{% else %}Register{% endif %}
+  </button>
+</form>
+
 
 </div>
+
 </body>
 </html>

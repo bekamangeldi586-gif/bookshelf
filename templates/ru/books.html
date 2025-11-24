@@ -1,14 +1,15 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="{{ lang }}">
 <head>
   <meta charset="utf-8">
-  <title>Библиотека — RU</title>
+  <title>Books — {{ lang|upper }}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
 </head>
 
 <body>
 <header>
-  <div class="logo">📚 Библиотека</div>
+  <div class="logo">{% if lang=='ru' %}📚 Библиотека{% elif lang=='kk' %}📚 Кiтапхана{% else %}📚 Library{% endif %}</div>
 
   <div class="header-right">
     <select id="langSelect" class="lang-select">
@@ -18,24 +19,18 @@
     </select>
 
     {% if current_user %}
-      <form action="{{ url_for('add_page', lang=lang) }}" method="get" style="display:inline;">
-        <button type="submit" class="submit-btn" style="padding:6px 12px; font-size:14px;">
-          Добавить
-        </button>
-      </form>
+      <a class="small-btn" href="{{ url_for('add_page', lang=lang) }}">
+        {% if lang=='ru' %}Добавить{% elif lang=='kk' %}Қосу{% else %}Add{% endif %}
+      </a>
 
-      <form action="{{ url_for('logout') }}" method="post" style="display:inline;">
-        <button type="submit" class="submit-btn" style="padding:6px 12px; font-size:14px;">
-          Выход
-        </button>
-      </form>
+      <a class="small-btn" href="{{ url_for('logout') }}">
+        {% if lang=='ru' %}Выход{% elif lang=='kk' %}Шығу{% else %}Logout{% endif %}
+      </a>
 
     {% else %}
-      <form action="{{ url_for('login', lang=lang) }}" method="get" style="display:inline;">
-        <button type="submit" class="submit-btn" style="padding:6px 12px; font-size:14px;">
-          Войти
-        </button>
-      </form>
+      <a class="small-btn" href="{{ url_for('login', lang=lang) }}">
+        {% if lang=='ru' %}Войти{% elif lang=='kk' %}Кіру{% else %}Login{% endif %}
+      </a>
     {% endif %}
   </div>
 </header>
@@ -47,24 +42,38 @@
 <div class="modal-bg" id="modalBg">
   <div class="modal">
     <span id="closeBtn" class="close-btn">&times;</span>
-    <img id="modalImg" src="">
+
+    <img id="modalImg">
+
     <div class="content">
       <h2 id="modalName"></h2>
 
-      <p><b>Автор:</b> <span id="modalAuthor"></span></p>
-      <p><b>Год:</b> <span id="modalYear"></span></p>
-      <p><b>Издательство:</b> <span id="modalIzdat"></span></p>
+      <p><b>
+        {% if lang=='ru' %}Автор{% elif lang=='kk' %}Автор{% else %}Author{% endif %}
+      :</b> <span id="modalAuthor"></span></p>
 
-      <p><b>Описание:</b></p>
+      <p><b>
+        {% if lang=='ru' %}Год{% elif lang=='kk' %}Жыл{% else %}Year{% endif %}
+      :</b> <span id="modalYear"></span></p>
+
+      <p><b>
+        {% if lang=='ru' %}Издательство{% elif lang=='kk' %}Баспасы{% else %}Publisher{% endif %}
+      :</b> <span id="modalIzdat"></span></p>
+
+      <p><b>
+        {% if lang=='ru' %}Описание{% elif lang=='kk' %}Сипаттама{% else %}About{% endif %}
+      :</b></p>
+
       <p id="modalAbout"></p>
 
-      <div class="remove-wrap">
-        <button id="removeBtn" class="remove-btn">Удалить</button>
-      </div>
+      {% if current_user %}
+      <button id="removeBtn" class="remove-btn">
+        {% if lang=='ru' %}Удалить{% elif lang=='kk' %}Өшіру{% else %}Delete{% endif %}
+      </button>
+      {% endif %}
     </div>
   </div>
 </div>
 
-<script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>

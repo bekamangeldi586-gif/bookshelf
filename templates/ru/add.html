@@ -1,74 +1,74 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="{{ lang }}">
 <head>
   <meta charset="utf-8">
-  <title>Добавить — RU</title>
+  <title>Add — {{ lang|upper }}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
 </head>
 <body>
+
 <header>
-  <div class="logo">📚 Библиотека</div>
+  <div class="logo">{% if lang=='ru' %}📚 Библиотека{% elif lang=='kk' %}📚 Кiтапхана{% else %}📚 Library{% endif %}</div>
 
   <div class="header-right">
+
     <select id="langSelect" class="lang-select">
-      <option value="ru" {% if lang=='ru' %}selected{% endif %}>Русский</option>
-      <option value="kk" {% if lang=='kk' %}selected{% endif %}>Қазақша</option>
-      <option value="en" {% if lang=='en' %}selected{% endif %}>English</option>
+      <option value="ru" {% if lang == 'ru' %}selected{% endif %}>Русский</option>
+      <option value="kk" {% if lang == 'kk' %}selected{% endif %}>Қазақша</option>
+      <option value="en" {% if lang == 'en' %}selected{% endif %}>English</option>
     </select>
 
-    <form action="{{ url_for('books_page', lang=lang) }}" method="get" style="display:inline;">
-      <button type="submit" class="submit-btn" style="padding:6px 12px; font-size:14px;">
-        ⬅ К книгам
-      </button>
-    </form>
+    {% if current_user %}
+      <span class="user-info">{{ current_user }}</span>
+      <a href="/logout" class="logout-btn">Выйти</a>
+    {% endif %}
 
-    <form action="{{ url_for('logout') }}" method="post" style="display:inline;">
-      <button type="submit" class="submit-btn" style="padding:6px 12px; font-size:14px;">
-        Выход
-      </button>
-    </form>
+      <a class="small-btn" href="{{ url_for('books_page', lang=lang) }}">
+      {% if lang=='ru' %}Книги{% elif lang=='kk' %}Кітаптар{% else %}Books{% endif %}
+    </a>
   </div>
 </header>
 
 <div class="form-container">
   <h1>Добавить книгу</h1>
 
-  <form id="addForm" class="book-form">
+  <form id="addForm">
+
     <div class="form-row">
       <label for="name">Название</label>
-      <input id="name" type="text" required>
+      <input id="name" name="name" required>
     </div>
 
     <div class="form-row">
       <label for="author">Автор</label>
-      <input id="author" type="text">
-    </div>
-
-    <div class="form-row">
-      <label for="year">Год</label>
-      <input id="year" type="text">
-    </div>
-
-    <div class="form-row">
-      <label for="izdat">Издательство</label>
-      <input id="izdat" type="text">
+      <input id="author" name="author" required>
     </div>
 
     <div class="form-row">
       <label for="about">Описание</label>
-      <textarea id="about"></textarea>
+      <textarea id="about" name="about"></textarea>
     </div>
 
     <div class="form-row">
-      <label for="image">Обложка</label>
-      <input id="image" type="file">
+      <label for="year">Год</label>
+      <input id="year" name="year" type="number">
     </div>
 
-    <button class="submit-btn" type="submit">Добавить книгу</button>
+    <div class="form-row">
+      <label for="izdat">Издательство</label>
+      <input id="izdat" name="izdat">
+    </div>
+
+    <div class="form-row">
+      <label for="image">Фото</label>
+      <input id="image" name="image" type="file" accept="image/*">
+    </div>
+
+    <button type="submit" class="submit-btn">Добавить</button>
+
   </form>
 </div>
 
-<script src="{{ url_for('static', filename='js/script.js') }}"></script>
-<script>initAddForm()</script>
 </body>
 </html>

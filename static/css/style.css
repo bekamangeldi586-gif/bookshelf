@@ -301,5 +301,38 @@ align-items: center;
     transition: border 0.3s, background 0.3s;
     box-sizing: border-box; /* важно для корректного паддинга */
 }
+/* ---------- КНОПКИ-ССЫЛКИ ---------- */
+
+.link-btn, .header-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #4b2c8f, #6a3dff);
+  color: #f3e8ff;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  transition: 0.25s;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+}
+
+.link-btn:hover, .header-btn:hover {
+  background: linear-gradient(135deg, #6a3dff, #8a63ff);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+}
+
+.link-btn:active, .header-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+}
+
+/* В хедере чуть меньше */
+.header-btn {
+  padding: 6px 14px;
+  font-size: 14px;
+  border-radius: 7px;
+}
 
 }
