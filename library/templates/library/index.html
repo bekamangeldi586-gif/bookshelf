@@ -1,0 +1,77 @@
+{% extends 'library/base.html' %}
+{% block content %}
+
+<div class="d-flex flex-wrap gap-2">
+    {% for book in books %}
+    <div class="card" style="width: 200px;">
+        {% if book.cover %}
+            <img src="{{ book.cover.url }}" class="card-img-top" alt="{{ book.title }}">
+        {% endif %}
+        <div class="card-body">
+            <h5 class="card-title">{{ book.title }}</h5>
+            <p><b>{% if lang == 'ru' %}Автор{% elif lang == 'en' %}Author{% elif lang == 'kz' %}Автор{% endif %}:</b> {{ book.author }}</p>
+            <button class="btn btn-primary btn-sm book-link" 
+                    data-title="{{ book.title }}"
+                    data-author="{{ book.author }}"
+                    data-year="{{ book.year }}"
+                    data-publisher="{{ book.publisher }}"
+                    data-description="{{ book.description }}"
+                    data-cover-url="{% if book.cover %}{{ book.cover.url }}{% endif %}"
+                    data-bs-toggle="modal" 
+                    data-bs-target="#bookModal">
+                {% if lang == 'ru' %}Подробнее{% elif lang == 'en' %}Details{% elif lang == 'kz' %}Толығырақ{% endif %}
+            </button>
+            {% if user.is_authenticated %}
+                <a href="{% url 'edit_book' book.id %}" class="btn btn-warning btn-sm">
+                    {% if lang == 'ru' %}Редактировать{% elif lang == 'en' %}Edit{% elif lang == 'kz' %}Өзгерту{% endif %}
+                </a>
+                <a href="{% url 'delete_book' book.id %}" class="btn btn-danger btn-sm">
+                    {% if lang == 'ru' %}Удалить{% elif lang == 'en' %}Delete{% elif lang == 'kz' %}Жою{% endif %}
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="bookModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalTitle"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <img id="modalCover" src="" class="img-fluid mb-3" style="max-height:300px;">
+        <p><b>{% if lang == 'ru' %}Автор{% elif lang == 'en' %}Author{% elif lang == 'kz' %}Автор{% endif %}:</b> <span id="modalAuthor"></span></p>
+        <p><b>{% if lang == 'ru' %}Год{% elif lang == 'en' %}Year{% elif lang == 'kz' %}Жылы{% endif %}:</b> <span id="modalYear"></span></p>
+        <p><b>{% if lang == 'ru' %}Издательство{% elif lang == 'en' %}Publisher{% elif lang == 'kz' %}Баспахана{% endif %}:</b> <span id="modalPublisher"></span></p>
+        <p id="modalDescription"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const lang = '{{ lang }}';
+    document.querySelectorAll('.book-link').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const bookId = this.dataset.id;
+            fetch(`/book/${bookId}/detail/?lang=${lang}`)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('modalTitle').textContent = data.title;
+                    document.getElementById('modalAuthor').textContent = data.author;
+                    document.getElementById('modalYear').textContent = data.year;
+                    document.getElementById('modalPublisher').textContent = data.publisher;
+                    document.getElementById('modalDescription').textContent = data.description;
+                    document.getElementById('modalCover').src = data.cover_url;
+                });
+        });
+    });
+});
+</script>
+
+{% endblock %}
