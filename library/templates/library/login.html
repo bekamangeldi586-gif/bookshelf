@@ -49,6 +49,15 @@
             <button type="submit" class="btn btn-primary w-100">
                 {% if lang == 'ru' %}Войти{% elif lang == 'en' %}Login{% elif lang == 'kz' %}Кіру{% endif %}
             </button>
+            
+            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #dee2e6;">
+                <p class="text-center text-muted small">
+                    {% if lang == 'ru' %}или войдите через{% elif lang == 'en' %}or login via{% elif lang == 'kz' %}немесе келесі арқылы кіріңіз{% endif %}
+                </p>
+                <a href="/oidc/authenticate/?next=/?lang={{ lang }}" class="btn btn-info w-100">
+                    {% if lang == 'ru' %}🔐 Вход через SSO (Keycloak){% elif lang == 'en' %}🔐 Login via SSO (Keycloak){% elif lang == 'kz' %}🔐 SSO арқылы кіру (Keycloak){% endif %}
+                </a>
+            </div>
         </form>
 
         <p class="mt-3 text-center">

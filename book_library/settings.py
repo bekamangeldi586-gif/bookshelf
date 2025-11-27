@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-x^jv3-p_-fdlg3k%%tfq2_g0ambl06d_of5#q!3(2qkfmoccx$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '::1']
 
 
 # Application definition
@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'library',
+    "mozilla_django_oidc",
 ]
 
 MIDDLEWARE = [
@@ -48,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'book_library.middleware.OIDCRedirectURIMiddleware',
 ]
 
 ROOT_URLCONF = 'book_library.urls'
@@ -130,3 +132,39 @@ LOGOUT_REDIRECT_URL = '/login/'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",  # старый логин/пароль
+    "library.oidc_backend.KeycloakOIDCBackend",  # custom SSO backend для Keycloak
+)
+
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
+
+# === KEYCLOAK OIDC (Настройки с твоими данными) ===
+
+OIDC_RP_CLIENT_ID = "dev-api"
+OIDC_RP_CLIENT_SECRET = "IYNTgfddrkcyjbdSwCk6PujRsRiDS9cG"
+
+# Callback URL - ВАЖНО: должен быть зарегистрирован в Keycloak Client
+OIDC_RP_CALLBACK_URL_NAME = "oidc_authentication_callback"
+
+OIDC_OP_DISCOVERY_DOCUMENT_URL = "https://idp.nic.kz:8443/realms/dev-nic/.well-known/openid-configuration"
+OIDC_OP_AUTHORIZATION_ENDPOINT = "https://idp.nic.kz:8443/realms/dev-nic/protocol/openid-connect/auth"
+OIDC_OP_TOKEN_ENDPOINT = "https://idp.nic.kz:8443/realms/dev-nic/protocol/openid-connect/token"
+OIDC_OP_USER_ENDPOINT = "https://idp.nic.kz:8443/realms/dev-nic/protocol/openid-connect/userinfo"
+OIDC_OP_JWKS_ENDPOINT = "https://idp.nic.kz:8443/realms/dev-nic/protocol/openid-connect/certs"
+OIDC_OP_LOGOUT_ENDPOINT = "https://idp.nic.kz:8443/realms/dev-nic/protocol/openid-connect/logout"
+
+# Дополнительные параметры OIDC
+OIDC_RP_SIGN_ALGO = "RS256"
+OIDC_RP_IDP_SIGN_ALG = "RS256"
+OIDC_USE_NONCE = True
+OIDC_RENEW_ID_TOKEN_BEFORE_EXPIRY = True
+OIDC_AUTH_REQUEST_SCOPES = ["openid", "profile", "email"]
+OIDC_CREATE_USER = True  # Автоматически создавать пользователей при входе через OIDC
+OIDC_STORE_ACCESS_TOKEN = True
+OIDC_STORE_ID_TOKEN = True
+
+# допускаем самоподписанные сертификаты
+OIDC_VERIFY_SSL = False

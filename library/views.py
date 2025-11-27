@@ -3,15 +3,22 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
 from .models import Book
 from .forms import BookForm
 from translatepy import Translator
+import requests
+from django.conf import settings
 
 translator = Translator()
 
+def get_lang(request):
+    """Получить язык из GET параметра"""
+    return request.GET.get('lang', 'ru')
+
 def index(request):
     books = Book.objects.all()
-    lang = request.GET.get('lang', 'ru')
+    lang = get_lang(request)
 
     # Поддержка kazakh в translatepy
     target_lang = lang
@@ -27,7 +34,7 @@ def index(request):
     return render(request, 'library/index.html', {'books': books, 'lang': lang})
 
 def register_view(request):
-    lang = request.GET.get('lang', 'ru')
+    lang = get_lang(request)
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
@@ -38,7 +45,7 @@ def register_view(request):
     return render(request, 'library/register.html', {'form': form, 'lang': lang})
 
 def login_view(request):
-    lang = request.GET.get('lang', 'ru')
+    lang = get_lang(request)
     form = AuthenticationForm(request, data=request.POST or None)
     if request.method == 'POST' and form.is_valid():
         user = form.get_user()
@@ -48,14 +55,25 @@ def login_view(request):
 
 @login_required
 def logout_view(request):
+    """Logout с поддержкой OIDC"""
+    lang = get_lang(request)
+    
+    # Получаем ID токена из сессии OIDC если он есть
+    id_token = request.session.get('oidc_id_token')
+    
     logout(request)
-    return redirect('login')
+    
+    # Если пользователь вошел через OIDC, отправляем его на logout эндпоинт Keycloak
+    if id_token:
+        logout_url = settings.OIDC_OP_LOGOUT_ENDPOINT
+        post_logout_redirect_uri = request.build_absolute_uri('/')
+        return redirect(f"{logout_url}?post_logout_redirect_uri={post_logout_redirect_uri}")
+    
+    return redirect(f'/login/?lang={lang}')
 
 @login_required
 def add_book(request):
-    lang = request.GET.get('lang', 'ru')
-    if lang == 'kz':
-        lang = 'kz'
+    lang = get_lang(request)
 
     if request.method == 'POST':
         form = BookForm(request.POST, request.FILES)
@@ -69,7 +87,7 @@ def add_book(request):
 
 @login_required
 def edit_book(request, pk):
-    lang = request.GET.get('lang', 'ru')
+    lang = get_lang(request)
     book = get_object_or_404(Book, pk=pk)
     if request.method == 'POST':
         form = BookForm(request.POST, request.FILES, instance=book)
@@ -88,7 +106,7 @@ def delete_book(request, pk):
 
 def book_detail(request, pk):
     book = get_object_or_404(Book, pk=pk)
-    lang = request.GET.get('lang', 'ru')
+    lang = get_lang(request)
 
     target_lang = lang
     if lang == 'kz':
