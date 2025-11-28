@@ -41,8 +41,8 @@ class KeycloakOIDCBackend(OIDCAuthenticationBackend):
         Получаем информацию о пользователе из ID токена и/или userinfo эндпоинта.
         """
         user_info = super().get_userinfo(access_token, id_token, payload)
-        
-        # Сохраняем ID токена в сессии для использования при логауте
-        self.request.session['oidc_id_token'] = id_token
+        # Не сохраняем сессию здесь — session доступна в request, а этот метод
+        # вызывается вне контекста запроса у некоторых реализаций.
+        # Сохранение/чтение id_token делается в logout_view из session.
         
         return user_info

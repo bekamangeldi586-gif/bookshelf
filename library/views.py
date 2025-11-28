@@ -9,6 +9,7 @@ from .forms import BookForm
 from translatepy import Translator
 import requests
 from django.conf import settings
+from urllib.parse import quote_plus
 
 translator = Translator()
 
@@ -59,16 +60,39 @@ def logout_view(request):
     lang = get_lang(request)
     
     # Получаем ID токена из сессии OIDC если он есть
-    id_token = request.session.get('oidc_id_token')
-    
+    # пытаемся найти id_token в нескольких возможных местах в сессии
+    id_token = None
+    # common key used by some OIDC libs
+    if 'oidc_id_token' in request.session:
+        id_token = request.session.get('oidc_id_token')
+    elif 'id_token' in request.session:
+        id_token = request.session.get('id_token')
+    else:
+        # some libs store a dict under 'oidc_auth' or similar
+        for key in ('oidc_auth', 'oidc', 'mozilla_oidc', 'oidc_tokens'):
+            data = request.session.get(key)
+            if isinstance(data, dict):
+                id_token = data.get('id_token') or data.get('idToken') or data.get('idtoken')
+                if id_token:
+                    break
+
+    # Сохраняем redirect_uri и id_token до очистки сессии
+    logout_redirect = request.build_absolute_uri('/')
+    saved_id_token = id_token
+
+    # Очистка сессии и выход из Django
     logout(request)
-    
-    # Если пользователь вошел через OIDC, отправляем его на logout эндпоинт Keycloak
-    if id_token:
+
+    # Если пользователь вошел через OIDC и у нас есть id_token, отправляем его на logout эндпоинт Keycloak
+    if saved_id_token:
         logout_url = settings.OIDC_OP_LOGOUT_ENDPOINT
-        post_logout_redirect_uri = request.build_absolute_uri('/')
-        return redirect(f"{logout_url}?post_logout_redirect_uri={post_logout_redirect_uri}")
-    
+        # URL-encode параметры
+        params = []
+        params.append(f"id_token_hint={quote_plus(saved_id_token)}")
+        params.append(f"post_logout_redirect_uri={quote_plus(logout_redirect)}")
+        return redirect(f"{logout_url}?{'&'.join(params)}")
+
+    # Без OIDC - просто перенаправляем на локальный login
     return redirect(f'/login/?lang={lang}')
 
 @login_required
