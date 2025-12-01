@@ -1,0 +1,9 @@
+Django==5.2.8
+translatepy>=1.8.0
+requests>=2.31.0
+mozilla-django-oidc>=1.2.0
+Pillow>=10.0.0
+
+# Optional (dev):
+# pytest
+# factory-boy

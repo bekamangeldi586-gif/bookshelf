@@ -1,0 +1,93 @@
+{% extends 'library/base.html' %}
+{% block content %}
+  <h1>
+    {% if lang == 'ru' %}Статистика использования{% elif lang == 'en' %}Usage Statistics{% elif lang == 'kz' %}Қолдану статистикасы{% else %}Usage Statistics{% endif %}
+  </h1>
+  <p>
+    {% if lang == 'ru' %}
+      Данные берутся из <code>/stat/itemuse</code> и отображаются столбчатой диаграммой.
+    {% elif lang == 'en' %}
+      Data is taken from <code>/stat/itemuse</code> and displayed as a bar chart.
+    {% elif lang == 'kz' %}
+      Деректер <code>/stat/itemuse</code> жерінен алынып, бағаналы диаграмма ретінде көрсетіледі.
+    {% else %}
+      Data is taken from <code>/stat/itemuse</code> and displayed as a bar chart.
+    {% endif %}
+  </p>
+  <div class="chart-container">
+    <canvas id="usageChart" height="160"></canvas>
+  </div>
+
+  <!-- Chart.js from CDN (MIT license) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    async function fetchData() {
+      const res = await fetch('{% url "itemuse_json" %}');
+      if (!res.ok) throw new Error('Failed to load data');
+      return res.json();
+    }
+
+    function prepareDataset(json) {
+      const labels = [];
+      const data = [];
+      if (!json || !Array.isArray(json.items)) return {labels, data};
+      json.items.forEach(it => {
+        labels.push(it.date);
+        data.push(it.value);
+      });
+      return {labels, data};
+    }
+
+    (async function() {
+      try {
+        const json = await fetchData();
+        const ds = prepareDataset(json);
+
+        const ctx = document.getElementById('usageChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ds.labels,
+            datasets: [{
+              label: '{% if lang == "ru" %}Количество человек, взявших книги{% elif lang == "en" %}People who took books{% elif lang == "kz" %}Кітап алған адамдар{% else %}People who took books{% endif %}',
+              data: ds.data,
+              backgroundColor: 'rgba(54, 162, 235, 0.7)',
+              borderColor: 'rgba(54, 162, 235, 1)',
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { display: false },
+              tooltip: { mode: 'index', intersect: false }
+            },
+            scales: {
+              x: {
+                display: true,
+                title: { display: true, text: '{% if lang == "ru" %}Месяц{% elif lang == "en" %}Month{% elif lang == "kz" %}Ай{% else %}Month{% endif %}' },
+                ticks: { maxRotation: 0 }
+              },
+              y: {
+                display: true,
+                beginAtZero: true,
+                title: { display: true, text: '{% if lang == "ru" %}Человек{% elif lang == "en" %}People{% elif lang == "kz" %}Адамдар{% else %}People{% endif %}' }
+              }
+            }
+          }
+        });
+
+      } catch (err) {
+        console.error(err);
+        document.body.insertAdjacentHTML('beforeend', '<p style="color:red">' + (
+          (function(){
+            var l = '{{ lang }}';
+            if (l === 'ru') return 'Ошибка загрузки данных.';
+            if (l === 'kz') return 'Деректерді жүктеу қатесі.';
+            return 'Failed to load data.';
+          })()
+        ) + '</p>');
+      }
+    })();
+  </script>
+{% endblock %}

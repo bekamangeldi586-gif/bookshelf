@@ -1,0 +1,29 @@
+{% extends 'library/base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2>{% if lang == 'ru' %}Пользователи{% elif lang == 'en' %}Users{% endif %}</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>{% if lang == 'ru' %}Роль{% elif lang == 'en' %}Role{% endif %}</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in users %}
+      <tr>
+        <td>{{ u.username }}</td>
+        <td>{% if u.is_staff %}{% if lang == 'ru' %}Админ{% else %}Admin{% endif %}{% else %}{% if lang == 'ru' %}User{% else %}User{% endif %}{% endif %}</td>
+        <td>
+          <a class="btn btn-sm btn-primary" href="{% url 'admin_user_cart' u.id %}?lang={{ lang }}">{% if lang == 'ru' %}Просмотр корзины{% elif lang == 'en' %}View Cart{% endif %}</a>
+          {% if request.user.id != u.id %}
+            <a class="btn btn-sm btn-secondary" href="{% url 'admin_promote_user' u.id %}">{% if u.is_staff %}{% if lang == 'ru' %}Убрать роль{% else %}Demote{% endif %}{% else %}{% if lang == 'ru' %}Сделать админом{% else %}Promote{% endif %}{% endif %}</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends 'library/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card mx-auto" style="max-width: 800px;">
+        <div class="card-header text-center">
+            {% if lang == 'ru' %}Форма книги{% elif lang == 'en' %}Book Form{% elif lang == 'kz' %}Кітап формасы{% endif %}
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="id_title" class="form-label">
+                        {% if lang == 'ru' %}Название{% elif lang == 'en' %}Title{% elif lang == 'kz' %}Атауы{% endif %}
+                    </label>
+                    {{ form.title }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_author" class="form-label">
+                        {% if lang == 'ru' %}Автор{% elif lang == 'en' %}Author{% elif lang == 'kz' %}Автор{% endif %}
+                    </label>
+                    {{ form.author }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_year" class="form-label">
+                        {% if lang == 'ru' %}Год{% elif lang == 'en' %}Year{% elif lang == 'kz' %}Жылы{% endif %}
+                    </label>
+                    {{ form.year }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_publisher" class="form-label">
+                        {% if lang == 'ru' %}Издательство{% elif lang == 'en' %}Publisher{% elif lang == 'kz' %}Баспахана{% endif %}
+                    </label>
+                    {{ form.publisher }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_description" class="form-label">
+                        {% if lang == 'ru' %}Описание{% elif lang == 'en' %}Description{% elif lang == 'kz' %}Сипаттамасы{% endif %}
+                    </label>
+                    {{ form.description }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_cover" class="form-label">
+                        {% if lang == 'ru' %}Обложка{% elif lang == 'en' %}Cover{% elif lang == 'kz' %}Қаптама{% endif %}
+                    </label>
+                    {{ form.cover }}
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-success">
+                        {% if lang == 'ru' %}Сохранить{% elif lang == 'en' %}Save{% elif lang == 'kz' %}Сақтау{% endif %}
+                    </button>
+                    <a href="{% url 'index' %}?lang={{ lang }}" class="btn btn-secondary">
+                        {% if lang == 'ru' %}Отмена{% elif lang == 'en' %}Cancel{% elif lang == 'kz' %}Бас тарту{% endif %}
+                    </a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

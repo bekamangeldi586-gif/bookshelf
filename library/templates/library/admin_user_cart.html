@@ -1,0 +1,27 @@
+{% extends 'library/base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2>{% if lang == 'ru' %}Корзина пользователя{% elif lang == 'en' %}User's Cart{% endif %}: {{ cart_owner.username }}</h2>
+
+  {% if items %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th>{% if lang == 'ru' %}Книга{% elif lang == 'en' %}Book{% endif %}</th>
+        <th>{% if lang == 'ru' %}Количество{% elif lang == 'en' %}Quantity{% endif %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+      <tr>
+        <td>{{ item.book.title }}</td>
+        <td>{{ item.quantity }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p class="text-muted">{% if lang == 'ru' %}Корзина пуста{% elif lang == 'en' %}Cart is empty{% endif %}</p>
+  {% endif %}
+</div>
+{% endblock %}
