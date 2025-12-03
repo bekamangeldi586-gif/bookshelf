@@ -1,4 +1,5 @@
 {% extends 'library/base.html' %}
+{% load static %}
 {% block content %}
   <h1>
     {% if lang == 'ru' %}Статистика использования{% elif lang == 'en' %}Usage Statistics{% elif lang == 'kz' %}Қолдану статистикасы{% else %}Usage Statistics{% endif %}
@@ -14,12 +15,11 @@
       Data is taken from <code>/stat/itemuse</code> and displayed as a bar chart.
     {% endif %}
   </p>
-  <div class="chart-container">
-    <canvas id="usageChart" height="160"></canvas>
+  <div class="chart-container" style="width: 100%; max-width: 1000px; margin: 40px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    <canvas id="usageChart" style="width: 100%; height: 500px; display: block;"></canvas>
   </div>
 
-  <!-- Chart.js from CDN (MIT license) -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="{% static 'library/js/simplechart.js' %}"></script>
   <script>
     async function fetchData() {
       const res = await fetch('{% url "itemuse_json" %}');
@@ -42,51 +42,37 @@
       try {
         const json = await fetchData();
         const ds = prepareDataset(json);
+        const lang = '{{ lang }}';
 
-        const ctx = document.getElementById('usageChart').getContext('2d');
-        new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: ds.labels,
-            datasets: [{
-              label: '{% if lang == "ru" %}Количество человек, взявших книги{% elif lang == "en" %}People who took books{% elif lang == "kz" %}Кітап алған адамдар{% else %}People who took books{% endif %}',
-              data: ds.data,
-              backgroundColor: 'rgba(54, 162, 235, 0.7)',
-              borderColor: 'rgba(54, 162, 235, 1)',
-              borderWidth: 1
-            }]
+        const strings = {
+          'ru': {
+            title: 'Количество человек, взявших книги',
+            yLabel: 'Человек',
+            xLabel: 'Месяц'
           },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: { display: false },
-              tooltip: { mode: 'index', intersect: false }
-            },
-            scales: {
-              x: {
-                display: true,
-                title: { display: true, text: '{% if lang == "ru" %}Месяц{% elif lang == "en" %}Month{% elif lang == "kz" %}Ай{% else %}Month{% endif %}' },
-                ticks: { maxRotation: 0 }
-              },
-              y: {
-                display: true,
-                beginAtZero: true,
-                title: { display: true, text: '{% if lang == "ru" %}Человек{% elif lang == "en" %}People{% elif lang == "kz" %}Адамдар{% else %}People{% endif %}' }
-              }
-            }
+          'en': {
+            title: 'People who took books',
+            yLabel: 'People',
+            xLabel: 'Month'
+          },
+          'kz': {
+            title: 'Кітап алған адамдар',
+            yLabel: 'Адамдар',
+            xLabel: 'Ай'
           }
+        };
+        const str = strings[lang] || strings['en'];
+
+        const chart = new SimpleBarChart('usageChart', {
+          barColor: '#3682eb',
+          textColor: '#333'
         });
+        chart.draw(ds.data, ds.labels, str.title, str.yLabel, str.xLabel);
 
       } catch (err) {
         console.error(err);
-        document.body.insertAdjacentHTML('beforeend', '<p style="color:red">' + (
-          (function(){
-            var l = '{{ lang }}';
-            if (l === 'ru') return 'Ошибка загрузки данных.';
-            if (l === 'kz') return 'Деректерді жүктеу қатесі.';
-            return 'Failed to load data.';
-          })()
-        ) + '</p>');
+        var errMsg = (lang === 'ru') ? 'Ошибка загрузки данных.' : (lang === 'kz') ? 'Деректерді жүктеу қатесі.' : 'Failed to load data.';
+        document.body.insertAdjacentHTML('beforeend', '<p style="color:red">' + errMsg + '</p>');
       }
     })();
   </script>
