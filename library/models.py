@@ -2,10 +2,8 @@ from django.db import models
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
-# Use the active user model
 User = get_user_model()
 
-# Create your models here.
 
 class Book(models.Model):
     title = models.CharField(max_length=255)

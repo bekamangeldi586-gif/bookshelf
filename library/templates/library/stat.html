@@ -6,17 +6,19 @@
   </h1>
   <p>
     {% if lang == 'ru' %}
-      Данные берутся из <code>/stat/itemuse</code> и отображаются столбчатой диаграммой.
+      Данные берутся из <a href="{% url 'itemuse_json' %}" target="_blank"><code>/stat/itemuse</code></a> и отображаются столбчатой диаграммой.
     {% elif lang == 'en' %}
-      Data is taken from <code>/stat/itemuse</code> and displayed as a bar chart.
+      Data is taken from <a href="{% url 'itemuse_json' %}" target="_blank"><code>/stat/itemuse</code></a> and displayed as a bar chart.
     {% elif lang == 'kz' %}
-      Деректер <code>/stat/itemuse</code> жерінен алынып, бағаналы диаграмма ретінде көрсетіледі.
+      Деректер <a href="{% url 'itemuse_json' %}" target="_blank"><code>/stat/itemuse</code></a> жерінен алынып, бағаналы диаграмма ретінде көрсетіледі.
     {% else %}
-      Data is taken from <code>/stat/itemuse</code> and displayed as a bar chart.
+      Data is taken from <a href="{% url 'itemuse_json' %}" target="_blank"><code>/stat/itemuse</code></a> and displayed as a bar chart.
     {% endif %}
   </p>
   <div class="chart-container" style="width: 100%; max-width: 1000px; margin: 40px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-    <canvas id="usageChart" style="width: 100%; height: 500px; display: block;"></canvas>
+    <canvas id="usageChart" style="width: 100%; height: 400px; display: block;"></canvas>
+    <div style="height:30px"></div>
+    <canvas id="usagePie" style="width: 100%; height: 360px; display: block;"></canvas>
   </div>
 
   <script src="{% static 'library/js/simplechart.js' %}"></script>
@@ -68,6 +70,15 @@
           textColor: '#333'
         });
         chart.draw(ds.data, ds.labels, str.title, str.yLabel, str.xLabel);
+
+        // Also draw pie chart with same data (distribution)
+        try {
+          const pie = new SimplePieChart('usagePie', { textColor: '#333' });
+          // For pie labels, we can show month names; if labels are like '01.2025' keep as-is
+          pie.draw(ds.data, ds.labels, (lang === 'ru') ? 'Доля по месяцам' : (lang === 'kz') ? 'Айлар бойынша үлес' : 'Share by Month');
+        } catch (e) {
+          console.warn('Pie chart not available', e);
+        }
 
       } catch (err) {
         console.error(err);

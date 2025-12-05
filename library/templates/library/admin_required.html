@@ -1,0 +1,27 @@
+{% extends 'library/base.html' %}
+{% load static %}
+{% block content %}
+  <h1>
+    {% if lang == 'ru' %}Требуются права администратора{% elif lang == 'en' %}Administrator Rights Required{% elif lang == 'kz' %}Әкімші құқығы қажет{% else %}Administrator Rights Required{% endif %}
+  </h1>
+  <p>
+    {% if lang == 'ru' %}
+      Вам нужно иметь права администратора для доступа к этой странице.
+    {% elif lang == 'en' %}
+      You need administrator rights to access this page.
+    {% elif lang == 'kz' %}
+      Осы бетке кіру үшін әкімші құқығы қажет.
+    {% else %}
+      You need administrator rights to access this page.
+    {% endif %}
+  </p>
+  {% if next %}
+    <p>
+      {% if lang == 'ru' %}Вы пытались открыть: {% elif lang == 'kz' %}Сіз ашуға тырысты:{% else %}You attempted to open:{% endif %}
+      <code>{{ next }}</code>
+    </p>
+  {% endif %}
+  <p>
+    <a href="/">{% if lang == 'ru' %}На главную{% elif lang == 'kz' %}Басты бетке{% else %}Back to home{% endif %}</a>
+  </p>
+{% endblock %}

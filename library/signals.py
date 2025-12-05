@@ -7,15 +7,12 @@ from django.apps import apps
 
 @receiver(post_migrate)
 def create_groups_and_users(sender, **kwargs):
-    # Only run for this app
     if sender.name != 'library':
         return
 
-    # Create groups
     admin_group, _ = Group.objects.get_or_create(name='admin')
     user_group, _ = Group.objects.get_or_create(name='user')
 
-    # Assign permissions to admin group for Book model
     try:
         Book = apps.get_model('library', 'Book')
         ct = ContentType.objects.get_for_model(Book)
@@ -25,18 +22,14 @@ def create_groups_and_users(sender, **kwargs):
     except Exception:
         pass
 
-    # Create default users if they don't exist
     try:
-        # Admin user 'Moteeees'
         admin_user, created = User.objects.get_or_create(username='Moteeees')
         if created:
             admin_user.set_password('Moteeees123')
-        # ensure staff so can access admin site
         admin_user.is_staff = True
         admin_user.save()
         admin_group.user_set.add(admin_user)
 
-        # Regular user 'user'
         normal_user, created = User.objects.get_or_create(username='user')
         if created:
             normal_user.set_password('user1234')

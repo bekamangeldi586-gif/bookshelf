@@ -12,23 +12,17 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-x^jv3-p_-fdlg3k%%tfq2_g0ambl06d_of5#q!3(2qkfmoccx$'
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '::1']
 
 
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -57,8 +51,8 @@ ROOT_URLCONF = 'book_library.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],  # можно добавить глобальные шаблоны, если нужно
-        'APP_DIRS': True,  # <- обязательно True, чтобы Django искал templates внутри приложений
+        'DIRS': [],
+        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -74,8 +68,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'book_library.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
     'default': {
@@ -85,8 +77,6 @@ DATABASES = {
 }
 
 
-# Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -104,8 +94,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
@@ -116,13 +104,9 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -134,19 +118,17 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 AUTHENTICATION_BACKENDS = (
-    "django.contrib.auth.backends.ModelBackend",  # старый логин/пароль
-    "library.oidc_backend.KeycloakOIDCBackend",  # custom SSO backend для Keycloak
+    "django.contrib.auth.backends.ModelBackend",
+    "library.oidc_backend.KeycloakOIDCBackend",
 )
 
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
-# === KEYCLOAK OIDC (Настройки с твоими данными) ===
 
 OIDC_RP_CLIENT_ID = "dev-api"
 OIDC_RP_CLIENT_SECRET = "IYNTgfddrkcyjbdSwCk6PujRsRiDS9cG"
 
-# Callback URL - ВАЖНО: должен быть зарегистрирован в Keycloak Client
 OIDC_RP_CALLBACK_URL_NAME = "oidc_authentication_callback"
 
 OIDC_OP_DISCOVERY_DOCUMENT_URL = "https://idp.nic.kz:8443/realms/dev-nic/.well-known/openid-configuration"
@@ -156,15 +138,13 @@ OIDC_OP_USER_ENDPOINT = "https://idp.nic.kz:8443/realms/dev-nic/protocol/openid-
 OIDC_OP_JWKS_ENDPOINT = "https://idp.nic.kz:8443/realms/dev-nic/protocol/openid-connect/certs"
 OIDC_OP_LOGOUT_ENDPOINT = "https://idp.nic.kz:8443/realms/dev-nic/protocol/openid-connect/logout"
 
-# Дополнительные параметры OIDC
 OIDC_RP_SIGN_ALGO = "RS256"
 OIDC_RP_IDP_SIGN_ALG = "RS256"
 OIDC_USE_NONCE = True
 OIDC_RENEW_ID_TOKEN_BEFORE_EXPIRY = True
 OIDC_AUTH_REQUEST_SCOPES = ["openid", "profile", "email"]
-OIDC_CREATE_USER = True  # Автоматически создавать пользователей при входе через OIDC
+OIDC_CREATE_USER = True
 OIDC_STORE_ACCESS_TOKEN = True
 OIDC_STORE_ID_TOKEN = True
 
-# допускаем самоподписанные сертификаты
 OIDC_VERIFY_SSL = False

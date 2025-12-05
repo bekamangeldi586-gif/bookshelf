@@ -8,7 +8,7 @@
         <form method="post">
             {% csrf_token %}
 
-            <!-- Username -->
+            
             <div class="mb-3">
                 <label for="id_username" class="form-label">
                     {% if lang == 'ru' %}Имя пользователя{% elif lang == 'en' %}Username{% elif lang == 'kz' %}Пайдаланушы аты{% endif %}
@@ -27,7 +27,7 @@
                 {% endfor %}
             </div>
 
-            <!-- Password -->
+            
             <div class="mb-3">
                 <label for="id_password" class="form-label">
                     {% if lang == 'ru' %}Пароль{% elif lang == 'en' %}Password{% elif lang == 'kz' %}Құпия сөз{% endif %}

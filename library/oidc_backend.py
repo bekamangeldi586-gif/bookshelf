@@ -16,13 +16,12 @@ class KeycloakOIDCBackend(OIDCAuthenticationBackend):
         Переопределяем метод создания пользователя для сохранения дополнительной информации.
         """
         user = super().create_user(claims)
-        
-        # Сохраняем дополнительные данные из Keycloak
+
         user.first_name = claims.get('given_name', '')
         user.last_name = claims.get('family_name', '')
         user.email = claims.get('email', '')
         user.save()
-        
+
         return user
 
     def update_user(self, user, claims):
@@ -33,7 +32,7 @@ class KeycloakOIDCBackend(OIDCAuthenticationBackend):
         user.last_name = claims.get('family_name', '')
         user.email = claims.get('email', '')
         user.save()
-        
+
         return user
 
     def get_userinfo(self, access_token, id_token, payload):
@@ -41,8 +40,5 @@ class KeycloakOIDCBackend(OIDCAuthenticationBackend):
         Получаем информацию о пользователе из ID токена и/или userinfo эндпоинта.
         """
         user_info = super().get_userinfo(access_token, id_token, payload)
-        # Не сохраняем сессию здесь — session доступна в request, а этот метод
-        # вызывается вне контекста запроса у некоторых реализаций.
-        # Сохранение/чтение id_token делается в logout_view из session.
-        
+
         return user_info

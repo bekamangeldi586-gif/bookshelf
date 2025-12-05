@@ -26,6 +26,9 @@ def get_lang(request):
     """Получить язык из GET параметра"""
     return request.GET.get('lang', 'ru')
 
+
+
+
 def index(request):
     books = Book.objects.all()
     lang = get_lang(request)
@@ -73,17 +76,13 @@ def login_view(request):
 def logout_view(request):
     """Logout с поддержкой OIDC"""
     lang = get_lang(request)
-    
-    # Получаем ID токена из сессии OIDC если он есть
-    # пытаемся найти id_token в нескольких возможных местах в сессии
+
     id_token = None
-    # common key used by some OIDC libs
     if 'oidc_id_token' in request.session:
         id_token = request.session.get('oidc_id_token')
     elif 'id_token' in request.session:
         id_token = request.session.get('id_token')
     else:
-        # some libs store a dict under 'oidc_auth' or similar
         for key in ('oidc_auth', 'oidc', 'mozilla_oidc', 'oidc_tokens'):
             data = request.session.get(key)
             if isinstance(data, dict):
@@ -91,29 +90,23 @@ def logout_view(request):
                 if id_token:
                     break
 
-    # Сохраняем redirect_uri и id_token до очистки сессии
     logout_redirect = request.build_absolute_uri('/')
     saved_id_token = id_token
 
-    # Очистка сессии и выход из Django
     logout(request)
 
-    # Если пользователь вошел через OIDC и у нас есть id_token, отправляем его на logout эндпоинт Keycloak
     if saved_id_token:
         logout_url = settings.OIDC_OP_LOGOUT_ENDPOINT
-        # URL-encode параметры
         params = []
         params.append(f"id_token_hint={quote_plus(saved_id_token)}")
         params.append(f"post_logout_redirect_uri={quote_plus(logout_redirect)}")
         return redirect(f"{logout_url}?{'&'.join(params)}")
 
-    # Без OIDC - просто перенаправляем на локальный login
     return redirect(f'/login/?lang={lang}')
 
 @login_required
 def add_book(request):
     lang = get_lang(request)
-    # only admin-group members can add books
     if not request.user.groups.filter(name='admin').exists():
         raise PermissionDenied
 
@@ -121,7 +114,7 @@ def add_book(request):
         form = BookForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return redirect('index')  # после сохранения переходим на главную
+            return redirect('index')
     else:
         form = BookForm()
 
@@ -188,24 +181,20 @@ def itemuse_json(request):
       ]
     }
     """
-    # Путь к файлу
     media_dir = Path(settings.MEDIA_ROOT)
     media_dir.mkdir(parents=True, exist_ok=True)
     out_path = media_dir / 'stat_itemuse.json'
 
     force = request.GET.get('force') in ('1', 'true', 'yes')
 
-    # Если файл существует и не запрошена принудительная регенерация, просто читаем и возвращаем его
     if out_path.exists() and not force:
         try:
             existing_text = out_path.read_text(encoding='utf-8')
             data = json.loads(existing_text)
             return JsonResponse(data)
         except Exception:
-            # Если чтение/парсинг не удался, продолжим и сгенерируем новый
             pass
 
-    # Генерируем примерные данные за последние 12 месяцев (по месяцам).
     today = timezone.localdate()
     year = today.year
     month = today.month
@@ -217,9 +206,7 @@ def itemuse_json(request):
         while m <= 0:
             m += 12
             y -= 1
-        # Используем первое число месяца как представление месяца
         d = datetime.date(y, m, 1)
-        # Примерные случайные значения — замените на реальные агрегации из БД при необходимости
         value = random.randint(50, 400)
         items.append({
             'date': d.strftime('%m.%Y'),
@@ -228,7 +215,6 @@ def itemuse_json(request):
 
     out = {'items': items}
 
-    # Записываем файл (если содержимое отличается)
     try:
         existing = None
         if out_path.exists():
@@ -353,7 +339,7 @@ def admin_user_cart(request, user_id):
 
 @login_required
 def admin_promote_user(request, user_id):
-    # promote/demote a user to/from admin role
+    # only admin staff can access
     if not request.user.is_staff:
         raise PermissionDenied
     User = get_user_model()

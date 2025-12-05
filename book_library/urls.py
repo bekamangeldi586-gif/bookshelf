@@ -20,7 +20,6 @@ from django.views.generic import RedirectView
 from library import views
 
 urlpatterns = [
-    # Redirect legacy admin/users/ to the custom manage/users/ view
     path('admin/users/', RedirectView.as_view(pattern_name='admin_users_list', permanent=False)),
     path('admin/', admin.site.urls),
     path('', include('library.urls')),
